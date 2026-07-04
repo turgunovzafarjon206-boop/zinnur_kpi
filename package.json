@@ -1,0 +1,18 @@
+{
+  "name": "zinnur-kpi",
+  "version": "1.0.0",
+  "description": "ZIN-NUR Akademiyasi KPI Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}

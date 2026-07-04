@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZIN-NUR – KPI Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g900:#052e16;--g800:#064e26;--g700:#065f30;--g600:#16a34a;
+  --g500:#22c55e;--g400:#4ade80;--g300:#86efac;--g200:#bbf7d0;
+  --g100:#dcfce7;--g50:#f0fdf4;
+  --amber:#d97706;--red:#dc2626;--blue:#2563eb;
+  --ink:#0a1a10;--ink2:#1a3a22;--muted:#6b7280;
+  --border:rgba(22,163,74,0.18);--card-bg:rgba(255,255,255,0.92);
+  --radius:14px;--shadow:0 2px 20px rgba(5,46,22,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--g50);color:var(--ink);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(ellipse 60% 40% at 80% 5%,rgba(34,197,94,0.12) 0%,transparent 65%),
+             radial-gradient(ellipse 45% 55% at 5% 85%,rgba(74,222,128,0.09) 0%,transparent 65%),
+             linear-gradient(160deg,#f0fdf4 0%,#e9faf0 50%,#f0fdf4 100%);}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--g800) 0%,var(--g700) 55%,#1d8348 100%);
+  padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  box-shadow:0 4px 28px rgba(5,46,22,0.28);}
+.hdr-left{display:flex;align-items:center;gap:13px;}
+.hdr-logo{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.14);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  border:1.5px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+header h1{font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.4px;}
+header p{font-size:12px;color:var(--g300);margin-top:2px;font-weight:500;}
+.hdr-badge{background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.22);
+  color:#fff;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:0.02em;}
+
+/* TABS */
+.tabs{background:#fff;display:flex;padding:0 20px;border-bottom:2px solid var(--g100);
+  overflow-x:auto;box-shadow:0 2px 8px rgba(5,46,22,0.05);gap:2px;}
+.tab{padding:13px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;
+  border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;
+  transition:all 0.18s;display:flex;align-items:center;gap:6px;border-radius:4px 4px 0 0;}
+.tab:hover:not(.active){color:var(--g600);background:var(--g50);}
+.tab.active{color:var(--g700);border-bottom-color:var(--g500);background:var(--g50);}
+
+/* LAYOUT */
+.content{max-width:1180px;margin:0 auto;padding:26px 18px;}
+.page{display:none;}
+.page.active{display:block;animation:fadeUp 0.22s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:740px){.grid2{grid-template-columns:1fr;}}
+
+/* CARD */
+.card{background:var(--card-bg);backdrop-filter:blur(10px);border-radius:var(--radius);
+  border:1.5px solid var(--border);padding:20px;box-shadow:var(--shadow);}
+.card-title{font-size:14px;font-weight:800;color:var(--g800);
+  display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+
+/* INFO BOX */
+.info-box{background:linear-gradient(90deg,var(--g100),var(--g50));border-left:4px solid var(--g500);
+  border-radius:10px;padding:11px 16px;font-size:13px;color:var(--g800);
+  margin-bottom:18px;font-weight:500;line-height:1.5;}
+
+/* PILLS */
+.r-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:800;text-transform:uppercase;}
+.r1{background:var(--g100);color:var(--g700);}
+.r2{background:#fef3c7;color:#92400e;}
+
+/* VAC EDITOR */
+.vac-hdr{display:grid;gap:8px;padding:7px 10px;background:var(--g100);
+  border-radius:8px;font-size:11px;font-weight:700;color:var(--g700);
+  text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
+.vh5{grid-template-columns:1fr 88px 78px 78px 42px;}
+.vh3{grid-template-columns:1fr 80px 80px;}
+.vh3k{grid-template-columns:1fr 70px 70px;}
+
+.vac-row{display:grid;gap:8px;align-items:center;padding:7px 10px;
+  border-radius:8px;border:1.5px solid transparent;transition:border 0.14s,background 0.14s;margin-bottom:3px;}
+.vr5{grid-template-columns:1fr 88px 78px 78px 42px;}
+.vr3{grid-template-columns:1fr 80px 80px;}
+.vr3k{grid-template-columns:1fr 70px 70px;}
+.vac-row:hover{background:var(--g50);border-color:var(--g200);}
+.vac-name{font-size:13px;font-weight:600;color:var(--ink2);}
+.vi{width:100%;padding:6px 7px;border:1.5px solid var(--g200);border-radius:8px;
+  font-size:13px;font-weight:700;color:var(--ink);font-family:'DM Mono',monospace;
+  background:#fff;text-align:center;transition:border 0.14s;}
+.vi:focus{outline:none;border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,0.13);}
+.vac-total{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--g700);text-align:center;}
+.vac-del{background:none;border:none;cursor:pointer;color:#bbf7d0;font-size:15px;
+  border-radius:6px;padding:4px 6px;transition:color 0.14s,background 0.14s;}
+.vac-del:hover{color:var(--red);background:#fee2e2;}
+
+.add-row{display:grid;grid-template-columns:1fr 88px 78px auto;gap:8px;align-items:center;
+  margin-top:10px;padding:10px;background:var(--g50);border-radius:10px;
+  border:1.5px dashed var(--g300);}
+.add-row input{padding:7px 9px;border:1.5px solid var(--g200);border-radius:8px;
+  font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;background:#fff;}
+.add-row input:focus{outline:none;border-color:var(--g500);}
+.btn-add{background:var(--g600);color:#fff;border:none;padding:8px 13px;
+  border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.14s;}
+.btn-add:hover{background:var(--g700);}
+
+.plan-sum{display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding:12px 16px;
+  background:linear-gradient(100deg,var(--g800),var(--g700));
+  border-radius:10px;color:#fff;}
+.ps-lbl{font-size:11px;font-weight:600;opacity:.7;margin-bottom:2px;}
+.ps-big{font-size:21px;font-weight:800;font-family:'DM Mono',monospace;}
+
+/* KPI WEIGHTS EDITOR */
+.kpi-weights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+.weight-row{display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--g50);border-radius:10px;border:1.5px solid var(--g100);}
+.weight-row label{flex:1;font-size:13px;font-weight:600;color:var(--ink2);}
+.weight-input{width:70px;padding:6px 8px;border:1.5px solid var(--g200);border-radius:8px;
+  font-size:14px;font-weight:800;text-align:center;font-family:'DM Mono',monospace;
+  background:#fff;transition:border 0.14s;color:var(--ink);}
+.weight-input:focus{outline:none;border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,0.13);}
+.weight-pct{font-size:13px;color:var(--muted);font-weight:600;}
+.weight-total-row{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:10px;margin-top:4px;font-weight:700;font-size:14px;}
+.wt-ok{background:var(--g100);color:var(--g700);border:1.5px solid var(--g300);}
+.wt-err{background:#fee2e2;color:var(--red);border:1.5px solid #fca5a5;}
+.weight-name{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;}
+
+/* KPI INPUT */
+.kblock{margin-bottom:18px;}
+.kblock-title{font-size:13px;font-weight:800;color:var(--g800);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.pct-badge{border-radius:6px;padding:2px 9px;font-size:12px;font-weight:800;color:#fff;
+  font-family:'DM Mono',monospace;background:var(--g600);cursor:default;}
+.field-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.field-row label{flex:1.5;font-size:13px;color:var(--ink2);font-weight:500;}
+.field-row input{width:90px;padding:7px 9px;border:1.5px solid var(--g200);border-radius:8px;
+  font-size:13px;font-weight:700;text-align:center;font-family:'DM Mono',monospace;
+  background:#fff;transition:border 0.14s;color:var(--ink);}
+.field-row input:focus{outline:none;border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,0.13);}
+.field-unit{font-size:12px;color:var(--muted);width:34px;}
+.hint{font-size:11px;color:var(--muted);margin:-4px 0 8px;font-style:italic;line-height:1.4;}
+.chk-label{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer;
+  padding:8px 10px;border-radius:8px;border:1.5px solid var(--g100);margin-bottom:6px;
+  font-weight:500;transition:border 0.14s,background 0.14s;}
+.chk-label:hover{background:var(--g50);border-color:var(--g300);}
+.chk-label input[type=checkbox]{accent-color:var(--g600);width:16px;height:16px;cursor:pointer;}
+.chk-bonus{margin-left:auto;font-size:11px;font-weight:700;color:var(--g600);}
+.divider{border:none;border-top:1.5px solid var(--g100);margin:15px 0;}
+
+.calc-btn{background:linear-gradient(135deg,var(--g600),var(--g700));color:#fff;border:none;
+  padding:13px 32px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;
+  margin-top:8px;display:inline-flex;align-items:center;gap:9px;
+  box-shadow:0 4px 16px rgba(22,163,74,0.32);transition:transform 0.14s,box-shadow 0.14s;}
+.calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(22,163,74,0.4);}
+.calc-btn:active{transform:translateY(0);}
+
+/* RESULT TABLE */
+.rtable{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+.rtable th{background:var(--g100);padding:9px 12px;text-align:left;
+  font-weight:700;color:var(--g800);font-size:11px;text-transform:uppercase;letter-spacing:.05em;}
+.rtable th:first-child{border-radius:8px 0 0 8px;}
+.rtable th:last-child{border-radius:0 8px 8px 0;}
+.rtable td{padding:10px 12px;border-bottom:1px solid var(--g100);color:var(--ink);}
+.rtable .total-row td{border-bottom:none;font-weight:900;background:linear-gradient(90deg,#eafaf1,#fff);color:var(--ink);}
+.num{font-family:'DM Mono',monospace;}
+.chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;font-family:'DM Mono',monospace;}
+.cg{background:var(--g100);color:var(--g700);}
+.ca{background:#fef3c7;color:#92400e;}
+.cr{background:#fee2e2;color:#991b1b;}
+.cb{background:#dbeafe;color:#1e40af;}
+
+/* PROGRESS */
+.prog-wrap{margin-top:16px;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--ink);}
+.prog-track{background:var(--g100);border-radius:999px;height:11px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;transition:width 0.6s cubic-bezier(.4,0,.2,1);}
+.fg{background:linear-gradient(90deg,var(--g500),var(--g400));}
+.fa{background:linear-gradient(90deg,#f59e0b,#fcd34d);}
+.fr{background:linear-gradient(90deg,#ef4444,#fca5a5);}
+.fb{background:linear-gradient(90deg,#3b82f6,#93c5fd);}
+
+/* BONUS CARD */
+.bonus-card{margin-top:16px;border-radius:14px;padding:22px 24px;
+  display:flex;align-items:center;gap:18px;color:#000;
+  box-shadow:0 6px 24px rgba(5,46,22,0.22);}
+.bonus-icon{font-size:40px;flex-shrink:0;}
+.bonus-lbl{font-size:12px;font-weight:600;opacity:.75;margin-bottom:4px;color:#000;}
+.bonus-amt{font-size:30px;font-weight:900;font-family:'DM Mono',monospace;line-height:1;color:#000;}
+.bonus-extra{font-size:12px;margin-top:6px;opacity:.8;color:#000;}
+
+/* OVER-PLAN badge */
+.over-badge{display:inline-flex;align-items:center;gap:4px;background:#dbeafe;color:#1e40af;
+  border-radius:20px;padding:2px 8px;font-size:11px;font-weight:800;font-family:'DM Mono',monospace;}
+
+/* COMPARE */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+@media(max-width:640px){.cmp-grid{grid-template-columns:1fr;}}
+.cmp-card{background:var(--card-bg);border-radius:var(--radius);border:1.5px solid var(--border);
+  padding:24px;text-align:center;box-shadow:var(--shadow);}
+.cmp-score{font-size:52px;font-weight:900;font-family:'DM Mono',monospace;line-height:1;}
+.cmp-name{font-size:14px;font-weight:800;margin-bottom:10px;color:var(--ink2);}
+.cmp-bonus{font-size:20px;font-weight:800;margin-top:10px;font-family:'DM Mono',monospace;}
+
+/* SCORE BIG BOX */
+.score-box{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 18px;border-radius:12px;margin-top:4px;
+  background:linear-gradient(90deg,#f0fdf4,#dcfce7);border:1.5px solid var(--g300);}
+.score-box .label{font-size:13px;font-weight:700;color:var(--ink2);}
+.score-box .big-num{font-size:28px;font-weight:900;font-family:'DM Mono',monospace;color:var(--ink);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-left">
+    <div class="hdr-logo">🎓</div>
+    <div>
+      <h1>ZIN-NUR Akademiyasi</h1>
+      <p>Recruiterlar uchun KPI Hisoblash Tizimi</p>
+    </div>
+  </div>
+  <div class="hdr-badge">v3.0</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPage('vacancies',this)">⚙️ Vakansiyalar</div>
+  <div class="tab" onclick="showPage('kpiset',this)">🎯 KPI Belgilash</div>
+  <div class="tab" onclick="showPage('plan',this)">📋 Oy Rejasi</div>
+  <div class="tab" onclick="showPage('r1',this)">👩 Yasmina KPI</div>
+  <div class="tab" onclick="showPage('r2',this)">👨 Zafarjon KPI</div>
+  <div class="tab" onclick="showPage('compare',this)">📊 Taqqoslash</div>
+</div>
+
+<div class="content">
+
+<!-- ===== VACANCIES ===== -->
+<div id="page-vacancies" class="page active">
+  <div class="info-box">⚙️ Vakansiya nomini, balini va norma kunini o'zgartiring yoki yangi vakansiya qo'shing. O'zgarishlar barcha sahifalarga darhol qo'llanadi.</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">👩 Yasmina – Recruiter 1 <span class="r-pill r1">R1</span></div>
+      <div class="vac-hdr vh5">
+        <div>Vakansiya nomi</div><div style="text-align:center">Ball</div>
+        <div style="text-align:center">Norma kun</div><div style="text-align:center">Reja ball*</div><div></div>
+      </div>
+      <div id="r1-vac-list"></div>
+      <div class="add-row">
+        <input type="text" id="r1-new-name" placeholder="Yangi vakansiya nomi...">
+        <input type="number" id="r1-new-ball" placeholder="Ball" min="0.1" step="0.1" value="1">
+        <input type="number" id="r1-new-norma" placeholder="Kun" min="1" value="7">
+        <button class="btn-add" onclick="addVac(1)">＋ Qo'sh</button>
+      </div>
+      <div class="plan-sum">
+        <div><div class="ps-lbl">Vakansiyalar</div><div class="ps-big" id="r1-vac-count">—</div></div>
+        <div style="text-align:right"><div class="ps-lbl">Reja ball (rejadan)</div><div class="ps-big" id="r1-plan-ball-hdr">—</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">* Oy Rejasi sahifasida kiritilgan songa ko'ra</div>
+    </div>
+    <div class="card">
+      <div class="card-title">👨 Zafarjon – Recruiter 2 <span class="r-pill r2">R2</span></div>
+      <div class="vac-hdr vh5">
+        <div>Vakansiya nomi</div><div style="text-align:center">Ball</div>
+        <div style="text-align:center">Norma kun</div><div style="text-align:center">Reja ball*</div><div></div>
+      </div>
+      <div id="r2-vac-list"></div>
+      <div class="add-row">
+        <input type="text" id="r2-new-name" placeholder="Yangi vakansiya nomi...">
+        <input type="number" id="r2-new-ball" placeholder="Ball" min="0.1" step="0.1" value="1.5">
+        <input type="number" id="r2-new-norma" placeholder="Kun" min="1" value="14">
+        <button class="btn-add" onclick="addVac(2)">＋ Qo'sh</button>
+      </div>
+      <div class="plan-sum">
+        <div><div class="ps-lbl">Vakansiyalar</div><div class="ps-big" id="r2-vac-count">—</div></div>
+        <div style="text-align:right"><div class="ps-lbl">Reja ball (rejadan)</div><div class="ps-big" id="r2-plan-ball-hdr">—</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">* Oy Rejasi sahifasida kiritilgan songa ko'ra</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KPI BELGILASH ===== -->
+<div id="page-kpiset" class="page">
+  <div class="info-box">🎯 Har bir recruiter uchun KPI mezonlari ulushini alohida belgilang. Jami <b>100%</b> bo'lishi shart.</div>
+  <div class="grid2">
+    <!-- R1 weights -->
+    <div class="card">
+      <div class="card-title">👩 Yasmina – KPI ulushlar <span class="r-pill r1">R1</span></div>
+      <div class="kpi-weights-grid">
+        <div class="weight-row">
+          <div>
+            <div class="weight-name">A) Hire rejasi</div>
+          </div>
+          <input type="number" class="weight-input" id="w1-hire" value="45" min="0" max="100" oninput="updWeights(1,'hire')">
+          <span class="weight-pct">%</span>
+        </div>
+        <div class="weight-row">
+          <div>
+            <div class="weight-name">B) 30 kun qolish</div>
+          </div>
+          <input type="number" class="weight-input" id="w1-qol" value="25" min="0" max="100" oninput="updWeights(1,'qol')">
+          <span class="weight-pct">%</span>
+        </div>
+        <div class="weight-row">
+          <div>
+            <div class="weight-name">C) Nomzod sifati</div>
+          </div>
+          <input type="number" class="weight-input" id="w1-sif" value="5" min="0" max="100" oninput="updWeights(1,'sif')">
+          <span class="weight-pct">%</span>
+        </div>
+        <div class="weight-row">
+          <div>
+            <div class="weight-name">D) CRM va hisobot</div>
+          </div>
+          <input type="number" class="weight-input" id="w1-crm" value="5" min="0" max="100" oninput="updWeights(1,'crm')">
+          <span class="weight-pct">%</span>
+        </div>
+      </div>
+      <div class="weight-total-row" id="w1-total-row">
+        <span>Jami:</span><span id="w1-total" style="font-family:'DM Mono',monospace;font-size:16px">100%</span>
+      </div>
+    </div>
+    <!-- R2 weights -->
+    <div class="card">
+      <div class="card-title">👨 Zafarjon – KPI ulushlar <span class="r-pill r2">R2</span></div>
+      <div class="kpi-weights-grid">
+        <div class="weight-row">
+          <div><div class="weight-name">A) Hire rejasi</div></div>
+          <input type="number" class="weight-input" id="w2-hire" value="30" min="0" max="100" oninput="updWeights(2,'hire')">
+          <span class="weight-pct">%</span>
+        </div>
+        <div class="weight-row">
+          <div><div class="weight-name">B) 30 kun qolish</div></div>
+          <input type="number" class="weight-input" id="w2-qol" value="30" min="0" max="100" oninput="updWeights(2,'qol')">
+          <span class="weight-pct">%</span>
+        </div>
+        <div class="weight-row">
+          <div><div class="weight-name">C) Nomzod sifati</div></div>
+          <input type="number" class="weight-input" id="w2-sif" value="10" min="0" max="100" oninput="updWeights(2,'sif')">
+          <span class="weight-pct">%</span>
+        </div>
+        <div class="weight-row">
+          <div><div class="weight-name">D) CRM va hisobot</div></div>
+          <input type="number" class="weight-input" id="w2-crm" value="10" min="0" max="100" oninput="updWeights(2,'crm')">
+          <span class="weight-pct">%</span>
+        </div>
+      </div>
+      <div class="weight-total-row" id="w2-total-row">
+        <span>Jami:</span><span id="w2-total" style="font-family:'DM Mono',monospace;font-size:16px">100%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="card-title">ℹ️ KPI ulush qoidalari</div>
+    <p style="font-size:13px;color:var(--ink2);line-height:1.7">
+      • Jami ulush <b>100%</b> bo'lishi kerak. Aks holda hisoblash noto'g'ri chiqadi.<br>
+      • <b>Hire rejasi</b> ulushi yuqori bo'lsa, vakansiya yopish natijasi muhimroq bo'ladi.<br>
+      • Har bir recruiter uchun ulushlar alohida — R1 va R2 farq qilishi mumkin.<br>
+      • <b>Reja ortiqcha bajarilsa</b>, hire KPI 100% dan yuqori bo'lishi mumkin — bu bonus hisobiga qo'shiladi.
+    </p>
+  </div>
+</div>
+
+<!-- ===== OY REJASI ===== -->
+<div id="page-plan" class="page">
+  <div class="info-box">📋 Oy boshida har bir vakansiya uchun reja sonini kiriting.</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">👩 Yasmina – Recruiter 1 <span class="r-pill r1">R1</span></div>
+      <div class="vac-hdr vh3"><div>Vakansiya</div><div style="text-align:center">Reja soni</div><div style="text-align:center">Jami ball</div></div>
+      <div id="r1-plan-rows"></div>
+      <div class="plan-sum" style="margin-top:14px">
+        <div><div class="ps-lbl">Jami reja</div><div class="ps-big" id="r1-plan-tc">—</div></div>
+        <div style="text-align:right"><div class="ps-lbl">Jami ball</div><div class="ps-big" id="r1-plan-tb">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">👨 Zafarjon – Recruiter 2 <span class="r-pill r2">R2</span></div>
+      <div class="vac-hdr vh3"><div>Vakansiya</div><div style="text-align:center">Reja soni</div><div style="text-align:center">Jami ball</div></div>
+      <div id="r2-plan-rows"></div>
+      <div class="plan-sum" style="margin-top:14px">
+        <div><div class="ps-lbl">Jami reja</div><div class="ps-big" id="r2-plan-tc">—</div></div>
+        <div style="text-align:right"><div class="ps-lbl">Jami ball</div><div class="ps-big" id="r2-plan-tb">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== R1 KPI ===== -->
+<div id="page-r1" class="page">
+  <div class="info-box">👩 Oy oxirida Yasmina natijalarini kiriting. Plan ortiqcha bajarilsa, foiz 100%dan yuqori chiqishi mumkin!</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="kblock">
+        <div class="kblock-title">A) Hire rejasi <span class="pct-badge" id="r1-w-hire-badge">45%</span></div>
+        <div class="vac-hdr vh3k"><div>Vakansiya</div><div style="text-align:center">Yopildi</div><div style="text-align:center">Ball</div></div>
+        <div id="r1-hire-rows"></div>
+        <div id="r1-hire-summary" style="margin-top:8px"></div>
+      </div>
+
+    </div>
+    <div class="card">
+      <div class="kblock">
+        <div class="kblock-title">B) 30 kun qolish <span class="pct-badge" id="r1-w-qol-badge">25%</span></div>
+        <div class="field-row"><label>Ishga kirganlar</label><input type="number" id="r1-kirdi" value="10" min="0" oninput="calcR1()"><span class="field-unit">kishi</span></div>
+        <div class="field-row"><label>30 kun ishlaganlar</label><input type="number" id="r1-qoldi" value="9" min="0" oninput="calcR1()"><span class="field-unit">kishi</span></div>
+      </div>
+      <hr class="divider">
+      <div class="kblock">
+        <div class="kblock-title">C) Nomzod sifati <span class="pct-badge" id="r1-w-sif-badge">5%</span></div>
+        <div class="field-row"><label>Rahbar bahosi (o'rtacha)</label><input type="number" id="r1-sifat" value="4.2" min="1" max="5" step="0.1" oninput="calcR1()"><span class="field-unit">/ 5</span></div>
+      </div>
+      <hr class="divider">
+      <div class="kblock">
+        <div class="kblock-title">D) CRM va hisobot <span class="pct-badge" id="r1-w-crm-badge">5%</span></div>
+        <div class="field-row"><label>To'ldirilganlik foizi</label><input type="number" id="r1-crm" value="100" min="0" max="100" oninput="calcR1()"><span class="field-unit">%</span></div>
+      </div>
+      <hr class="divider">
+      <div class="kblock">
+        <div class="kblock-title">➕ Qo'shimcha bonuslar</div>
+        <label class="chk-label"><input type="checkbox" id="r1-qiyin" onchange="calcR1()"> Qiyin vakansiya 100% yopildi <span class="chk-bonus">+200 000</span></label>
+        <label class="chk-label"><input type="checkbox" id="r1-90kun" onchange="calcR1()"> 90 kun ichida hech kim ketmadi <span class="chk-bonus">+300 000</span></label>
+        <label class="chk-label"><input type="checkbox" id="r1-kuchli" onchange="calcR1()"> 3 ta kuchli xodim topildi <span class="chk-bonus">+500 000</span></label>
+      </div>
+    </div>
+  </div>
+  <button class="calc-btn" onclick="calcR1()">🔄 KPI Hisoblash</button>
+  <div id="r1-result" style="margin-top:20px"></div>
+</div>
+
+<!-- ===== R2 KPI ===== -->
+<div id="page-r2" class="page">
+  <div class="info-box">👨 Oy oxirida Zafarjon natijalarini kiriting. Plan ortiqcha bajarilsa, foiz 100%dan yuqori chiqishi mumkin!</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="kblock">
+        <div class="kblock-title">A) Hire rejasi <span class="pct-badge" id="r2-w-hire-badge">30%</span></div>
+        <div class="vac-hdr vh3k"><div>Vakansiya</div><div style="text-align:center">Yopildi</div><div style="text-align:center">Ball</div></div>
+        <div id="r2-hire-rows"></div>
+        <div id="r2-hire-summary" style="margin-top:8px"></div>
+      </div>
+
+    </div>
+    <div class="card">
+      <div class="kblock">
+        <div class="kblock-title">B) 30 kun qolish <span class="pct-badge" id="r2-w-qol-badge">30%</span></div>
+        <div class="field-row"><label>Ishga kirganlar</label><input type="number" id="r2-kirdi" value="6" min="0" oninput="calcR2()"><span class="field-unit">kishi</span></div>
+        <div class="field-row"><label>30 kun ishlaganlar</label><input type="number" id="r2-qoldi" value="5" min="0" oninput="calcR2()"><span class="field-unit">kishi</span></div>
+      </div>
+      <hr class="divider">
+      <div class="kblock">
+        <div class="kblock-title">C) Nomzod sifati <span class="pct-badge" id="r2-w-sif-badge">10%</span></div>
+        <div class="field-row"><label>Rahbar bahosi (o'rtacha)</label><input type="number" id="r2-sifat" value="4.7" min="1" max="5" step="0.1" oninput="calcR2()"><span class="field-unit">/ 5</span></div>
+      </div>
+      <hr class="divider">
+      <div class="kblock">
+        <div class="kblock-title">D) CRM va hisobot <span class="pct-badge" id="r2-w-crm-badge">10%</span></div>
+        <div class="field-row"><label>To'ldirilganlik foizi</label><input type="number" id="r2-crm" value="90" min="0" max="100" oninput="calcR2()"><span class="field-unit">%</span></div>
+      </div>
+      <hr class="divider">
+      <div class="kblock">
+        <div class="kblock-title">➕ Qo'shimcha bonuslar</div>
+        <label class="chk-label"><input type="checkbox" id="r2-qiyin" onchange="calcR2()"> Qiyin vakansiya 100% yopildi <span class="chk-bonus">+200 000</span></label>
+        <label class="chk-label"><input type="checkbox" id="r2-90kun" onchange="calcR2()"> 90 kun ichida hech kim ketmadi <span class="chk-bonus">+300 000</span></label>
+        <label class="chk-label"><input type="checkbox" id="r2-kuchli" onchange="calcR2()"> 3 ta kuchli xodim topildi <span class="chk-bonus">+500 000</span></label>
+      </div>
+    </div>
+  </div>
+  <button class="calc-btn" onclick="calcR2()">🔄 KPI Hisoblash</button>
+  <div id="r2-result" style="margin-top:20px"></div>
+</div>
+
+<!-- ===== COMPARE ===== -->
+<div id="page-compare" class="page">
+  <div class="info-box">📊 Avval R1 va R2 KPI sahifalarida hisoblang.</div>
+  <div id="compare-body"><div style="text-align:center;padding:60px;color:var(--muted);font-size:14px">Hali hisob kiritilmagan 📊</div></div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ========== DATA ==========
+let vac={
+  1:[
+    {name:'Arab tili ustozi',ball:1.5,norma:6},
+    {name:'Administrator',ball:1.0,norma:5},
+    {name:'Assistent ustoz',ball:1.0,norma:5},
+  ],
+  2:[
+    {name:'Sotuvchi',ball:1.2,norma:7},
+    {name:'Marketolog',ball:2.5,norma:14},
+    {name:'Targetolog',ball:2.5,norma:14},
+    {name:'Filial menejeri',ball:2.5,norma:14},
+    {name:'ROP',ball:3.0,norma:21},
+    {name:'Administrator',ball:1.0,norma:5},
+  ]
+};
+// KPI weights per recruiter
+let W={
+  1:{hire:45,qol:25,sif:5,crm:5},
+  2:{hire:30,qol:30,sif:10,crm:10}
+};
+let planQty={1:{},2:{}};
+let hireQty={1:{},2:{}};
+let lastR1=null,lastR2=null;
+
+// defaults
+planQty[1]={'Arab tili ustozi':10,'Administrator':2,'Assistent ustoz':2};
+planQty[2]={'Sotuvchi':4,'Marketolog':1,'ROP':1};
+hireQty[1]={'Arab tili ustozi':8,'Administrator':2,'Assistent ustoz':1};
+hireQty[2]={'Sotuvchi':4,'Marketolog':1,'ROP':1};
+
+// ========== TABS ==========
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  if(name==='plan'){renderPlan();}
+  if(name==='r1'){renderHire(1);updateBadges(1);}
+  if(name==='r2'){renderHire(2);updateBadges(2);}
+}
+
+// ========== WEIGHTS ==========
+// Track which field was last changed per recruiter
+const lastChanged = {1: null, 2: null};
+
+function updWeights(r, changedId) {
+  const ids = ['hire','qol','sif','crm'];
+  const inputs = {};
+  ids.forEach(k => {
+    inputs[k] = document.getElementById(`w${r}-${k}`);
+  });
+
+  // Clamp the changed field to 0-100 first
+  if (changedId) {
+    const el = inputs[changedId];
+    let v = +el.value || 0;
+    if (v < 0) v = 0;
+    if (v > 100) v = 100;
+    el.value = v;
+    lastChanged[r] = changedId;
+  }
+
+  // Read current values
+  const vals = {};
+  ids.forEach(k => { vals[k] = +inputs[k].value || 0; });
+
+  const total = ids.reduce((s, k) => s + vals[k], 0);
+
+  // If over 100: reduce the OTHER fields proportionally (not the one user just typed)
+  if (total > 100 && changedId) {
+    const overflow = total - 100;
+    // Others = all except changedId
+    const others = ids.filter(k => k !== changedId);
+    const othersSum = others.reduce((s, k) => s + vals[k], 0);
+
+    if (othersSum > 0) {
+      // Subtract from others proportionally
+      let remaining = overflow;
+      others.forEach((k, i) => {
+        let cut = i === others.length - 1
+          ? remaining
+          : Math.round((vals[k] / othersSum) * overflow);
+        cut = Math.min(cut, vals[k]); // can't go below 0
+        vals[k] = Math.max(0, vals[k] - cut);
+        remaining -= cut;
+        inputs[k].value = vals[k];
+      });
+    } else {
+      // Others are all 0 — just cap the changed field to 100 minus rest
+      vals[changedId] = 100 - (total - vals[changedId] - overflow + overflow - overflow);
+      vals[changedId] = Math.max(0, 100 - others.reduce((s,k)=>s+vals[k],0));
+      inputs[changedId].value = vals[changedId];
+    }
+  }
+
+  const newTotal = ids.reduce((s, k) => s + (+inputs[k].value || 0), 0);
+  W[r] = { hire: +inputs.hire.value||0, qol: +inputs.qol.value||0, sif: +inputs.sif.value||0, crm: +inputs.crm.value||0 };
+
+  const trow = document.getElementById(`w${r}-total-row`);
+  const tspan = document.getElementById(`w${r}-total`);
+  tspan.textContent = newTotal + '%';
+  trow.className = 'weight-total-row ' + (newTotal === 100 ? 'wt-ok' : 'wt-err');
+  updateBadges(r);
+  if(r===1&&lastR1) calcR1();
+  if(r===2&&lastR2) calcR2();
+}
+function updateBadges(r){
+  const w=W[r];
+  const pfx=`r${r}-w-`;
+  const el=id=>document.getElementById(id);
+  if(el(pfx+'hire-badge')) el(pfx+'hire-badge').textContent=w.hire+'%';
+  if(el(pfx+'qol-badge'))  el(pfx+'qol-badge').textContent=w.qol+'%';
+  if(el(pfx+'sif-badge'))  el(pfx+'sif-badge').textContent=w.sif+'%';
+  if(el(pfx+'crm-badge'))  el(pfx+'crm-badge').textContent=w.crm+'%';
+}
+
+// ========== VAC LIST ==========
+function renderVacList(r){
+  const list=document.getElementById(`r${r}-vac-list`);
+  list.innerHTML='';
+  vac[r].forEach((v,i)=>{
+    const qty=planQty[r][v.name]||0;
+    const row=document.createElement('div');
+    row.className='vac-row vr5';
+    row.innerHTML=`
+      <div class="vac-name">${v.name}</div>
+      <input type="number" class="vi" value="${v.ball}" min="0.1" step="0.1" onchange="updVacBall(${r},${i},this.value)">
+      <input type="number" class="vi" value="${v.norma}" min="1" step="1" onchange="updVacNorma(${r},${i},this.value)">
+      <div class="vac-total" id="vl-${r}-${i}">${(qty*v.ball).toFixed(1)}</div>
+      <button class="vac-del" onclick="delVac(${r},${i})">✕</button>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById(`r${r}-vac-count`).textContent=vac[r].length;
+  refreshHdr(r);
+}
+function updVacBall(r,i,val){
+  vac[r][i].ball=parseFloat(val)||1;
+  const qty=planQty[r][vac[r][i].name]||0;
+  const el=document.getElementById(`vl-${r}-${i}`);
+  if(el) el.textContent=(qty*vac[r][i].ball).toFixed(1);
+  refreshHdr(r);
+}
+function updVacNorma(r,i,val){vac[r][i].norma=parseFloat(val)||7;}
+function delVac(r,i){
+  const name=vac[r][i].name;
+  vac[r].splice(i,1);
+  delete planQty[r][name]; delete hireQty[r][name];
+  renderVacList(r);
+}
+function addVac(r){
+  const name=document.getElementById(`r${r}-new-name`).value.trim();
+  const ball=parseFloat(document.getElementById(`r${r}-new-ball`).value)||1;
+  const norma=parseFloat(document.getElementById(`r${r}-new-norma`).value)||7;
+  if(!name)return;
+  vac[r].push({name,ball,norma});
+  document.getElementById(`r${r}-new-name`).value='';
+  renderVacList(r);
+}
+function refreshHdr(r){
+  const pb=vac[r].reduce((s,v)=>s+(planQty[r][v.name]||0)*v.ball,0);
+  document.getElementById(`r${r}-plan-ball-hdr`).textContent=pb.toFixed(1);
+}
+
+// ========== OY REJASI ==========
+function renderPlan(){
+  [1,2].forEach(r=>{
+    const c=document.getElementById(`r${r}-plan-rows`);
+    c.innerHTML='';
+    vac[r].forEach(v=>{
+      const qty=planQty[r][v.name]||0;
+      const key=`pl-${r}-${v.name.replace(/\W/g,'_')}`;
+      const row=document.createElement('div');
+      row.className='vac-row vr3';
+      row.innerHTML=`
+        <div class="vac-name">${v.name} <span style="font-size:11px;color:var(--muted)">(${v.ball} ball)</span></div>
+        <input type="number" class="vi" value="${qty}" min="0" onchange="updPlan(${r},'${v.name}',this.value,'${key}')">
+        <div class="vac-total" id="${key}">${(qty*v.ball).toFixed(1)}</div>
+      `;
+      c.appendChild(row);
+    });
+    updPlanTotals(r);
+  });
+}
+function updPlan(r,name,val,key){
+  planQty[r][name]=parseFloat(val)||0;
+  const v=vac[r].find(x=>x.name===name);
+  const el=document.getElementById(key);
+  if(v&&el) el.textContent=(planQty[r][name]*v.ball).toFixed(1);
+  updPlanTotals(r); refreshHdr(r);
+}
+function updPlanTotals(r){
+  const tc=Object.values(planQty[r]).reduce((s,x)=>s+x,0);
+  const tb=vac[r].reduce((s,v)=>s+(planQty[r][v.name]||0)*v.ball,0);
+  document.getElementById(`r${r}-plan-tc`).textContent=tc;
+  document.getElementById(`r${r}-plan-tb`).textContent=tb.toFixed(1);
+}
+
+// ========== HIRE ROWS ==========
+function renderHire(r){
+  const c=document.getElementById(`r${r}-hire-rows`);
+  c.innerHTML='';
+  vac[r].forEach(v=>{
+    const qty=hireQty[r][v.name]||0;
+    const key=`hr-${r}-${v.name.replace(/\W/g,'_')}`;
+    const row=document.createElement('div');
+    row.className='vac-row vr3k';
+    row.innerHTML=`
+      <div class="vac-name">${v.name} <span style="font-size:11px;color:var(--muted)">(reja: ${planQty[r][v.name]||0})</span></div>
+      <input type="number" class="vi" value="${qty}" min="0" onchange="updHire(${r},'${v.name}',this.value,'${key}')">
+      <div class="vac-total" id="${key}">${(qty*v.ball).toFixed(1)}</div>
+    `;
+    c.appendChild(row);
+  });
+  if(r===1) calcR1(); else calcR2();
+}
+function updHire(r,name,val,key){
+  hireQty[r][name]=parseFloat(val)||0;
+  const v=vac[r].find(x=>x.name===name);
+  const el=document.getElementById(key);
+  if(v&&el) el.textContent=(hireQty[r][name]*v.ball).toFixed(1);
+  if(r===1) calcR1(); else calcR2();
+}
+
+// ========== HELPERS ==========
+function gn(id){return parseFloat(document.getElementById(id).value)||0;}
+// UNCAPPED hire — plan ortiqcha bajarilsa yuqori chiqadi
+function hireKPIpct(yop,plan){return plan>0?(yop/plan*100):0;}
+function qolKPI(p){if(p>=90)return 100;if(p>=80)return 80;if(p>=70)return 50;return 0;}
+function sifKPI(v){if(v>=4.5)return 100;if(v>=4.0)return 80;if(v>=3.5)return 50;return 0;}
+function crmKPI(v){if(v>=95)return 100;if(v>=85)return 80;if(v>=70)return 50;return 0;}
+function bonusAmt(p){if(p>=90)return 3000000;if(p>=80)return 2000000;if(p>=70)return 1000000;return 0;}
+function money(n){return n.toLocaleString('uz-UZ')+" so'm";}
+function chip(p){return p>100?'cb':p>=80?'cg':p>=50?'ca':'cr';}
+function fill(p){return p>100?'fb':p>=80?'fg':p>=50?'fa':'fr';}
+function scolor(p){return p>100?'var(--blue)':p>=80?'var(--g600)':p>=60?'var(--amber)':'var(--red)';}
+function bgrd(p){
+  if(p>100) return 'linear-gradient(135deg,#1e3a8a,#2563eb)';
+  if(p>=90) return 'linear-gradient(135deg,#052e16,#065f30)';
+  if(p>=80) return 'linear-gradient(135deg,#16a34a,#22c55e)';
+  if(p>=70) return 'linear-gradient(135deg,#d97706,#f59e0b)';
+  return 'linear-gradient(135deg,#dc2626,#ef4444)';
+}
+
+function renderResult(divId,rows,score,extra,parts,wTotal){
+  const base=bonusAmt(Math.min(score,100)),total=base+extra;
+  let exHtml=extra>0?`<div class="bonus-extra">+ ${parts.join(' | ')}</div>`:'';
+  const warnHtml=wTotal!==100?`<div style="background:#fef3c7;border:1.5px solid #fcd34d;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;margin-bottom:12px">⚠️ KPI ulushlar jami ${wTotal}% — to'g'ri hisoblash uchun 100% bo'lishi kerak</div>`:'';
+  const overHtml=score>100?`<div style="background:#dbeafe;border:1.5px solid #93c5fd;border-radius:8px;padding:8px 12px;font-size:12px;color:#1e40af;margin-bottom:12px">🚀 Reja <b>${score.toFixed(1)}%</b> bajarildi — reja <b>ortiqcha</b> bajarilyapti! Hire KPI hisobga olinadi, lekin bonus 100%ga qarab belgilanadi.</div>`:'';
+
+  document.getElementById(divId).innerHTML=`
+    ${warnHtml}
+    ${overHtml}
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">📊 Natija jadvali</div>
+      <table class="rtable">
+        <thead><tr><th>KPI mezoni</th><th>Reja</th><th>Natija</th><th>KPI %</th><th>Ball</th></tr></thead>
+        <tbody>
+          ${rows.map(row=>`<tr>
+            <td style="color:var(--ink)">${row.name}</td>
+            <td class="num" style="color:var(--ink)">${row.reja}</td>
+            <td class="num" style="color:var(--ink)">${row.natija}${row.over?` <span class="over-badge">↑ ортиқ</span>`:''}</td>
+            <td><span class="chip ${chip(row.kpi)}">${row.kpi.toFixed(1)}%</span></td>
+            <td class="num" style="color:var(--ink)"><b>${row.ball.toFixed(2)}</b></td>
+          </tr>`).join('')}
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="4" style="color:var(--ink);font-size:14px">🏆 JAMI KPI</td>
+            <td class="num" style="font-size:20px;color:${scolor(score)}"><b>${score.toFixed(1)}%</b></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="prog-wrap">
+        <div class="prog-lbl">
+          <span style="color:var(--ink)">Umumiy natija</span>
+          <span style="color:${scolor(score)};font-family:'DM Mono',monospace;font-weight:900;font-size:15px">${score.toFixed(1)}%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill ${fill(score)}" style="width:${Math.min(score,130)/1.3}%"></div></div>
+      </div>
+    </div>
+    <div class="bonus-card" style="${bgrd(Math.min(score,100))}">
+      <div class="bonus-icon">💰</div>
+      <div>
+        <div class="bonus-lbl" style="color:#000">Oylik bonus (bonus 100%ga qarab)</div>
+        <div class="bonus-amt">${money(total)}</div>
+        ${exHtml}
+      </div>
+    </div>
+  `;
+}
+
+// ========== CALC R1 ==========
+function calcR1(){
+  updateBadges(1);
+  const w=W[1]; const wTotal=w.hire+w.qol+w.sif+w.crm;
+  const planBall=vac[1].reduce((s,v)=>s+(planQty[1][v.name]||0)*v.ball,0)||19;
+  const yopBall =vac[1].reduce((s,v)=>s+(hireQty[1][v.name]||0)*v.ball,0);
+  const hireP=hireKPIpct(yopBall,planBall); // uncapped
+  const hB=w.hire*hireP/100;
+
+  const ki=gn('r1-kirdi'),ko=gn('r1-qoldi');
+  const qP=ki>0?ko/ki*100:0; const qK=qolKPI(qP); const qB=w.qol*qK/100;
+  const sf=gn('r1-sifat'); const sK=sifKPI(sf); const sB=w.sif*sK/100;
+  const cr=gn('r1-crm');   const cK=crmKPI(cr); const cB=w.crm*cK/100;
+
+  const score=hB+qB+sB+cB;
+  let extra=0,parts=[];
+  if(document.getElementById('r1-qiyin').checked){extra+=200000;parts.push('Qiyin +200k');}
+  if(document.getElementById('r1-90kun').checked){extra+=300000;parts.push('90 kun +300k');}
+  if(document.getElementById('r1-kuchli').checked){extra+=500000;parts.push('3 kuchli +500k');}
+
+  // hire summary
+  const sEl=document.getElementById('r1-hire-summary');
+  if(sEl) sEl.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;padding:8px 10px;background:var(--g50);border-radius:8px">
+    <span>Reja: <b>${planBall.toFixed(1)}</b> ball</span>
+    <span>Yopildi: <b>${yopBall.toFixed(1)}</b> ball</span>
+    <span>KPI: <b style="color:${scolor(hireP)}">${hireP.toFixed(1)}%</b></span>
+    ${hireP>100?'<span class="over-badge">🚀 Ortiqcha!</span>':''}
+  </div>`;
+
+  const rows=[
+    {name:`A) Hire rejasi (${w.hire}%)`,reja:planBall.toFixed(1)+' ball',natija:yopBall.toFixed(1)+' ball',kpi:hireP,ball:hB,over:hireP>100},
+    {name:`B) 30 kun qolish (${w.qol}%)`,reja:'90%',natija:qP.toFixed(0)+'%',kpi:qK,ball:qB,over:false},
+    {name:`D) Nomzod sifati (${w.sif}%)`,reja:'4.5+',natija:sf+'',kpi:sK,ball:sB,over:false},
+    {name:`E) CRM (${w.crm}%)`,reja:'95%',natija:cr+'%',kpi:cK,ball:cB,over:false},
+  ];
+  lastR1={score,bonus:bonusAmt(Math.min(score,100))+extra,rows};
+  renderResult('r1-result',rows,score,extra,parts,wTotal);
+  updateCompare();
+}
+
+// ========== CALC R2 ==========
+function calcR2(){
+  updateBadges(2);
+  const w=W[2]; const wTotal=w.hire+w.qol+w.sif+w.crm;
+  const planBall=vac[2].reduce((s,v)=>s+(planQty[2][v.name]||0)*v.ball,0)||10.3;
+  const yopBall =vac[2].reduce((s,v)=>s+(hireQty[2][v.name]||0)*v.ball,0);
+  const hireP=hireKPIpct(yopBall,planBall); // uncapped
+  const hB=w.hire*hireP/100;
+
+  const ki=gn('r2-kirdi'),ko=gn('r2-qoldi');
+  const qP=ki>0?ko/ki*100:0; const qK=qolKPI(qP); const qB=w.qol*qK/100;
+  const sf=gn('r2-sifat'); const sK=sifKPI(sf); const sB=w.sif*sK/100;
+  const cr=gn('r2-crm');   const cK=crmKPI(cr); const cB=w.crm*cK/100;
+
+  const score=hB+qB+sB+cB;
+  let extra=0,parts=[];
+  if(document.getElementById('r2-qiyin').checked){extra+=200000;parts.push('Qiyin +200k');}
+  if(document.getElementById('r2-90kun').checked){extra+=300000;parts.push('90 kun +300k');}
+  if(document.getElementById('r2-kuchli').checked){extra+=500000;parts.push('3 kuchli +500k');}
+
+  const sEl=document.getElementById('r2-hire-summary');
+  if(sEl) sEl.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;padding:8px 10px;background:var(--g50);border-radius:8px">
+    <span>Reja: <b>${planBall.toFixed(1)}</b> ball</span>
+    <span>Yopildi: <b>${yopBall.toFixed(1)}</b> ball</span>
+    <span>KPI: <b style="color:${scolor(hireP)}">${hireP.toFixed(1)}%</b></span>
+    ${hireP>100?'<span class="over-badge">🚀 Ortiqcha!</span>':''}
+  </div>`;
+
+  const rows=[
+    {name:`A) Hire rejasi (${w.hire}%)`,reja:planBall.toFixed(1)+' ball',natija:yopBall.toFixed(1)+' ball',kpi:hireP,ball:hB,over:hireP>100},
+    {name:`B) 30 kun qolish (${w.qol}%)`,reja:'90%',natija:qP.toFixed(0)+'%',kpi:qK,ball:qB,over:false},
+    {name:`D) Nomzod sifati (${w.sif}%)`,reja:'4.5+',natija:sf+'',kpi:sK,ball:sB,over:false},
+    {name:`E) CRM (${w.crm}%)`,reja:'95%',natija:cr+'%',kpi:cK,ball:cB,over:false},
+  ];
+  lastR2={score,bonus:bonusAmt(Math.min(score,100))+extra,rows};
+  renderResult('r2-result',rows,score,extra,parts,wTotal);
+  updateCompare();
+}
+
+// ========== COMPARE ==========
+function updateCompare(){
+  if(!lastR1&&!lastR2) return;
+  const r1=lastR1||{score:0,bonus:0,rows:[]};
+  const r2=lastR2||{score:0,bonus:0,rows:[]};
+  const labels=['Hire rejasi','30 kun qolish','Nomzod sifati','CRM'];
+  document.getElementById('compare-body').innerHTML=`
+    <div class="cmp-grid">
+      <div class="cmp-card">
+        <div class="cmp-name">👩 Yasmina (R1)</div>
+        <div class="cmp-score" style="color:${scolor(r1.score)}">${r1.score.toFixed(1)}%</div>
+        <div class="prog-track" style="margin:10px 0">
+          <div class="prog-fill ${fill(r1.score)}" style="width:${Math.min(r1.score,130)/1.3}%"></div>
+        </div>
+        <div class="cmp-bonus" style="color:var(--g700)">💰 ${money(r1.bonus)}</div>
+      </div>
+      <div class="cmp-card">
+        <div class="cmp-name">👨 Zafarjon (R2)</div>
+        <div class="cmp-score" style="color:${scolor(r2.score)}">${r2.score.toFixed(1)}%</div>
+        <div class="prog-track" style="margin:10px 0">
+          <div class="prog-fill ${fill(r2.score)}" style="width:${Math.min(r2.score,130)/1.3}%"></div>
+        </div>
+        <div class="cmp-bonus" style="color:var(--g700)">💰 ${money(r2.bonus)}</div>
+      </div>
+    </div>
+    ${(lastR1&&lastR2)?`
+    <div class="card">
+      <div class="card-title">⚖️ KPI bo'yicha solishtirma</div>
+      <table class="rtable" style="margin-top:8px">
+        <thead><tr><th>Mezon</th><th>Yasmina (R1)</th><th>Zafarjon (R2)</th></tr></thead>
+        <tbody>
+          ${labels.map((m,i)=>{
+            const a=r1.rows[i]||{kpi:0,ball:0};
+            const b=r2.rows[i]||{kpi:0,ball:0};
+            return `<tr>
+              <td style="color:var(--ink)">${m}</td>
+              <td><span class="chip ${chip(a.kpi)}">${a.kpi.toFixed(1)}%</span> <span class="num" style="color:var(--muted);font-size:12px">→ ${a.ball.toFixed(2)}</span></td>
+              <td><span class="chip ${chip(b.kpi)}">${b.kpi.toFixed(1)}%</span> <span class="num" style="color:var(--muted);font-size:12px">→ ${b.ball.toFixed(2)}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td style="color:var(--ink)"><b>JAMI KPI</b></td>
+            <td><b style="color:${scolor(r1.score)};font-family:'DM Mono',monospace;font-size:16px">${r1.score.toFixed(1)}%</b></td>
+            <td><b style="color:${scolor(r2.score)};font-family:'DM Mono',monospace;font-size:16px">${r2.score.toFixed(1)}%</b></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`:''}
+  `;
+}
+
+// ========== SAVE / LOAD (server) ==========
+let saveTimer = null;
+
+function collectState() {
+  const kpiInputs = {};
+  ['r1-kirdi','r1-qoldi','r1-sifat','r1-crm',
+   'r2-kirdi','r2-qoldi','r2-sifat','r2-crm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) kpiInputs[id] = el.value;
+  });
+  const checkboxes = {};
+  ['r1-qiyin','r1-90kun','r1-kuchli','r2-qiyin','r2-90kun','r2-kuchli'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) checkboxes[id] = el.checked;
+  });
+  return {
+    vac: JSON.parse(JSON.stringify(vac)),
+    W:   JSON.parse(JSON.stringify(W)),
+    planQty: JSON.parse(JSON.stringify(planQty)),
+    hireQty: JSON.parse(JSON.stringify(hireQty)),
+    kpiInputs,
+    checkboxes
+  };
+}
+
+function applyState(state) {
+  if (!state) return;
+  if (state.vac)      vac      = state.vac;
+  if (state.W)        W        = state.W;
+  if (state.planQty)  planQty  = state.planQty;
+  if (state.hireQty)  hireQty  = state.hireQty;
+  if (state.W) {
+    [1,2].forEach(r => {
+      ['hire','qol','sif','crm'].forEach(k => {
+        const el = document.getElementById('w'+r+'-'+k);
+        if (el && state.W[r] && state.W[r][k] !== undefined) el.value = state.W[r][k];
+      });
+    });
+  }
+  if (state.kpiInputs) Object.entries(state.kpiInputs).forEach(([id,val]) => {
+    const el = document.getElementById(id); if (el) el.value = val;
+  });
+  if (state.checkboxes) Object.entries(state.checkboxes).forEach(([id,val]) => {
+    const el = document.getElementById(id); if (el) el.checked = val;
+  });
+}
+
+function saveAll() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const res = await fetch('/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(collectState())
+      });
+      if (res.ok) showToast('Saqlandi!', '#052e16');
+    } catch(e) {
+      showToast('Saqlanmadi', '#c81e1e');
+    }
+  }, 600);
+}
+
+async function loadFromServer() {
+  try {
+    const res = await fetch('/api/load');
+    if (res.ok) {
+      const state = await res.json();
+      applyState(state);
+      return !!state;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function showToast(msg, bg) {
+  let t = document.getElementById('save-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'save-toast';
+    document.body.appendChild(t);
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 4px 16px rgba(5,46,22,0.3);z-index:9999;transition:opacity 0.4s;opacity:0;pointer-events:none;';
+  }
+  t.style.background = bg;
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2200);
+}
+
+// ========== INIT ==========
+(async () => {
+  await loadFromServer();
+  renderVacList(1);
+  renderVacList(2);
+  updWeights(1);
+  updWeights(2);
+
+  const _updVacBall=updVacBall, _updVacNorma=updVacNorma, _delVac=delVac, _addVac=addVac;
+  updVacBall  = (r,i,v) => { _updVacBall(r,i,v);   saveAll(); };
+  updVacNorma = (r,i,v) => { _updVacNorma(r,i,v);  saveAll(); };
+  delVac      = (r,i)   => { _delVac(r,i);          saveAll(); };
+  addVac      = (r)     => { _addVac(r);             saveAll(); };
+
+  const _updWeights=updWeights;
+  updWeights = (r) => { _updWeights(r); saveAll(); };
+
+  const _updPlan=updPlan;
+  updPlan = (r,n,v,k) => { _updPlan(r,n,v,k); saveAll(); };
+
+  const _updHire=updHire;
+  updHire = (r,n,v,k) => { _updHire(r,n,v,k); saveAll(); };
+
+  ['r1-kirdi','r1-qoldi','r1-sifat','r1-crm',
+   'r2-kirdi','r2-qoldi','r2-sifat','r2-crm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', saveAll);
+  });
+  ['r1-qiyin','r1-90kun','r1-kuchli','r2-qiyin','r2-90kun','r2-kuchli'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', saveAll);
+  });
+})();
+</script>
+</body>
+</html>
